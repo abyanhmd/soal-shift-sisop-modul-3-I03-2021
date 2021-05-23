@@ -336,3 +336,161 @@ Obstacles:
 - hard to understand
 - In the beginning, The shared result from `soal2a.c` not sended to `soal2b.c` so the result 0.
 
+3. 
+**A. Program accepting `-f` argument, then the program will categorize file as much as the user input**</br>
+First, we will make `*checkName` function to make the program to identify the file name.
+```c
+char *checkName(char *dir){
+char *name = strrchr(dir, '/');
+if(name == dir) return "";
+return name + 1;
+}
+Then, we will make *lowercase function to make the procedure is not case sensitive by checking the small characters
+char *lowercase(char *str){
+unsigned char *temp = (unsigned char *)str;
+while(*temp){
+*temp = tolower(*temp);
+temp++;
+}
+return str;
+}
+```
+After that, we will check the extension, and classify the types of the extension given. If its `unknown` or `hidden`, the file will be specially categorized. The function used is `cat`
+```c
+void* cat(void *arg){
+char *src = (char *)arg;
+char srcP[150];
+memcpy(srcP, (char*)arg, 400);
+char *srcExt = cekExt(src);
+char ext[400];
+strcpy(ext, srcExt);
+
+DIR *dir = opendir(srcExt);
+if(dir) closedir(dir);
+else if(ENOENT == errno) mkdir(srcExt, 0755);
+
+char *srcName = checkName(srcP);
+char *curr = getenv("PWD");
+
+char destP[512];
+sprintf(destP, "%s/%s/%s", curr, ext, srcName);
+
+rename(srcP, destP);
+}
+```
+Lastly, in the main program, it will identify the `-f` argument and access the functions below, resulting the designated outputs.
+```c
+if(argc > 2 && strcmp(argv[1], "-f") == 0){
+pthread_t tid[argc-2];
+int count = 0;
+for(int i=2; i<argc; i++){
+if(access(argv[i], F_OK) == 0){
+pthread_create(&tid[count], NULL, cat, (void *)argv[i]);
+count++;
+printf("File %d : Berhasil Dikategorikan\n", i-1);
+}
+else printf("File %d : Sad, gagal :(\n", i-1);
+}
+for(int i=0; i<count; i++) pthread_join(tid[i], NULL);
+return 0;
+}
+```
+**B. Program accepting -d argument, then the program will categorize the file but only with 1 input**</br>
+First we will make `cat2` function then it will accept the file only once. After identifying the file, we will call `cat` function to categorize it.
+```c
+void cat2(char *folderPath, int threadSize){
+DIR *fd = opendir(folderPath);
+struct dirent *dp;
+pthread_t tid[threadSize];
+int count = 0;
+char fileName[400][400];
+
+while((dp = readdir(fd)) != NULL){
+if(dp->d_type == DT_REG){
+sprintf(fileName[count], "%s/%s", folderPath, dp->d_name);
+pthread_create(&tid[count], NULL, cat, (void *)fileName[count]);
+count++;
+}
+else if((dp->d_type == DT_DIR) && strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
+            char folderPath2[400];
+            sprintf(folderPath2, "%s/%s", folderPath, dp->d_name);
+            DIR *fd2 = opendir(folderPath2);
+            struct dirent *dp2;
+int threadSize2 = 0;
+while((dp2 = readdir(fd2)) != NULL){
+if(dp2->d_type == DT_REG){
+threadSize2++;
+}
+}
+cat2(folderPath2, threadSize2);
+closedir(fd2);
+        }
+}
+
+for(int i=0; i<threadSize; i++) pthread_join(tid[i], NULL);
+    closedir(fd);
+}
+```
+After the function is done, it will receive `-d` function and calling the `cat2` function to process the categorization. The ouput will be the same as the designated by the problem.
+```c
+else if(argc == 3 && strcmp(argv[1], "-d") == 0){
+DIR *fd = opendir(argv[2]);
+if(fd){
+struct dirent *dp;
+int threadSize = 0;
+while((dp = readdir(fd)) != NULL){
+if(dp->d_type == DT_REG){
+threadSize++;
+}
+}
+cat2(argv[2], threadSize);
+closedir(fd);
+printf("Direktori sukses disimpan!\n");
+}
+else if(ENOENT == errno) printf("Yah, gagal disimpan :(\n");
+}
+```
+**C. By inputting `*` argument, the program will categorize ALL files in the working directory**</br>
+First, the program the `*` argument, then the directory that has been inputted will be organized using `cat2` function.
+```c
+else if(argc == 2 && strcmp(argv[1], "*") == 0){
+char *curr = getenv("PWD");
+DIR *dir = opendir(curr);
+struct dirent *dp;
+int threadSize = 0;
+while((dp = readdir(dir)) != NULL){
+if(dp->d_type == DT_REG){
+threadSize++;
+}
+}
+cat2(curr, threadSize);
+closedir(dir);
+}
+else{
+printf("Format input salah\n");
+return 0;
+}
+```
+**D. If there is a file that its name is peculiar, such as `unknown` file type or `hidden` file, it will be categorize to a special folder**</br>
+We will use the `cekExt` function before to identify it, then make some condition if there is `unknown` file types or `hidden` files. Also we will need the `lowercase` function to help the identification more detailed.
+```c
+char *cekExt(char *dir){
+char *unk = {"Unknown"};
+char *hid = {"Hidden"};
+char *tmp = strrchr(dir, '/');
+if(tmp[1] == '.') return hid;
+
+int i = 0;
+while(i < strlen(tmp) && tmp[i] != '.') i++;
+if(i == strlen(tmp)) return unk;
+
+char ext[400];
+int j = i;
+while(i < strlen(tmp)) ext[i-j] = tmp[i], i++;
+return lowercase(ext + 1);
+}
+```
+**E. Every 1 file that is categorized is operated by 1 thread so that it can run in parallel so that the category process can run faster**</br>
+The functions needed in this program are already implement the `pthread` function so that the program will run as thread goes.
+
+
