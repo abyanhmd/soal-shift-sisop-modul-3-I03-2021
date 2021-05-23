@@ -493,4 +493,5 @@ return lowercase(ext + 1);
 **E. Every 1 file that is categorized is operated by 1 thread so that it can run in parallel so that the category process can run faster**</br>
 The functions needed in this program are already implement the `pthread` function so that the program will run as thread goes.
 
-
+Obstacles:
+- Hard to understand
