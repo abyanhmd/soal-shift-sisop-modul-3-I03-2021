@@ -214,7 +214,7 @@ void main(){
 
     printf("\n\n");
 ```
-   After we input new matrix which is 4x6 we print the shared matrix from `soal2a.c` .
+   After we input new matrix which is 4x6 we print the shared matrix from `soal2a.c`.</br>
    Next step is we calculate the factorial using:
    ```c
    for(unsigned long long i=0; i<24; i++){
