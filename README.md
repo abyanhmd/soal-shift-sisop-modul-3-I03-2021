@@ -148,7 +148,7 @@ int main(){
     	}
     }
    ```
-  We directly use the loop limit because the question wants us only to input 4x3 matrix and 3x6 matrix
+  We directly use the loop limit because the question wants us only to input 4x3 matrix and 3x6 matrix</br>
   Next we find the multiply of both matrix.
 ```c
 void Multiply(int arr1[4][3], int arr2[3][6]){
