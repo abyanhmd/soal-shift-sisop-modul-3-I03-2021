@@ -336,7 +336,7 @@ Obstacles:
 - hard to understand
 - In the beginning, The shared result from `soal2a.c` not sended to `soal2b.c` so the result 0.
 
-3. 
+### **Number 3**
 **A. Program accepting `-f` argument, then the program will categorize file as much as the user input**</br>
 First, we will make `*checkName` function to make the program to identify the file name.
 ```c
