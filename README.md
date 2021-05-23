@@ -3,7 +3,7 @@
 ### **Number 1**
 The problem asks us to make a server and a client system that can communicate each other via socket. The first thing to do is to connect the client to the server and register the account to proceed the next command.
 
-**Register or Login to the server**
+**- Register or Login to the server**
 
 Before storing the data to the database, client should register and login to the server. Before getting into the function, we made if statements in the server and the client code whether the command that the client typed is matched with the server command. </br>
 __*Server*__
@@ -76,7 +76,7 @@ void reglog(char choice[], char id[], char pass[], char passid[]) {
 ```
 In the client code, we change the id and password to the id:password format to make an easy access to the server because we can search in the `akun.txt` with this format, not id and password individually. We need to make a new variable to store the id and password with `strcat` then we can send it to the server.
 
-**Insert new information of the book**
+**- Insert new information of the book**
 
 In order to add data to the `file.tsv`, we need to access the file stream and print the information from the client input to the server database.
 
