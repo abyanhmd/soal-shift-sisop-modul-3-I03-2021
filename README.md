@@ -128,6 +128,10 @@ void addFile(char choice[], char id[], int sock) {
 ```
 It basically just send the string to the client and the client will read it. After that, the client will send the input to the server and the server will store it to the `file.tsv`.
 
+Obstacles :
+- hard to understand the reference because it's not often used
+- hard to implement the code
+
 ### **NUMBER 2**
 **a. Input Matrix A (4x3) and Matrix B (3x6) then multiply it**</br>
 First We need to input both Matrix
